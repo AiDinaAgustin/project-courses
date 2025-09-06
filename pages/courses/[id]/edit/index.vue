@@ -16,6 +16,7 @@ const imageFile = ref(null);
 const categories = ref([]);
 const isLoading = ref(false);
 const errorMessage = ref('');
+const oldImageUrl = ref(null);
 
 const onFileChange = (e) => {
     imageFile.value = e.target.files[0];
@@ -29,7 +30,8 @@ const fetchCourse = async () => {
     title.value = course.title;
     description.value = course.description || '';
     categoryId.value = course.category.id;
-    imageFile.value = course.image || null;
+    oldImageUrl.value = course.image_url || null;
+    imageFile.value = null; 
   } catch (error) {
     errorMessage.value = 'Failed to load course. Please try again.';
     console.error('Error fetching course:', error);
@@ -113,6 +115,10 @@ onMounted(async () => {
               <label for="image" class="block text-gray-700 text-sm font-bold mb-2">
                 Image
               </label>
+              <div v-if="oldImageUrl" class="mb-2">
+                <img :src="oldImageUrl" alt="Current Image" class="h-24 w-24 object-cover rounded" />
+                <p class="text-xs text-gray-500">Current image</p>
+              </div>
               <input
                 id="image"
                 type="file"

@@ -86,7 +86,7 @@ onMounted(fetchCourses);
             <td class="py-2 px-4 border-b">{{ course.title }}</td>
             <td class="py-2 px-4 border-b">{{ course.description }}</td>
             <td class="py-2 px-4 border-b">
-              <img v-if="course.image_url" :src="course.image_url" alt="Course Image" class="h-16 w-16 object-cover rounded"/>
+              <img v-if="course.image" :src="course.image" alt="Course Image" class="h-16 w-16 object-cover rounded"/>
               <span v-else>No Image</span>
             </td>
             <td class="py-2 px-4 border-b">{{ course.category.name || 'Uncategorized' }}</td>
