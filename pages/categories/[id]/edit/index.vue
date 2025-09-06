@@ -15,7 +15,8 @@ const errorMessage = ref('');
 const fetchCategory = async () => {
   isLoading.value = true;
   try {
-    const category = await categoryApi.getCategoryById(categoryId);
+    const response = await categoryApi.getCategoryById(categoryId);
+    const category = response.data;
     name.value = category.name;
     description.value = category.description || '';
   } catch (error) {

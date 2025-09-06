@@ -19,10 +19,11 @@ const errorMessage = ref('');
 const fetchCourse = async () => {
   isLoading.value = true;
   try {
-    const course = await courseApi.getCourseById(courseId);
+    const response = await courseApi.getCourseById(courseId);
+    const course = response.data;
     title.value = course.title;
     description.value = course.description || '';
-    categoryId.value = course.category_id;
+    categoryId.value = course.category.id;
   } catch (error) {
     errorMessage.value = 'Failed to load course. Please try again.';
     console.error('Error fetching course:', error);
