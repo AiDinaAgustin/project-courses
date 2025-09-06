@@ -12,9 +12,14 @@ const categoryApi = useCategoryApi();
 const title = ref('');
 const description = ref('');
 const categoryId = ref(null);
+const imageFile = ref(null);
 const categories = ref([]);
 const isLoading = ref(false);
 const errorMessage = ref('');
+
+const onFileChange = (e) => {
+    imageFile.value = e.target.files[0];
+}
 
 const fetchCourse = async () => {
   isLoading.value = true;
@@ -24,6 +29,7 @@ const fetchCourse = async () => {
     title.value = course.title;
     description.value = course.description || '';
     categoryId.value = course.category.id;
+    imageFile.value = course.image || null;
   } catch (error) {
     errorMessage.value = 'Failed to load course. Please try again.';
     console.error('Error fetching course:', error);
@@ -37,13 +43,15 @@ const handleSubmit = async () => {
   errorMessage.value = '';
   
   try {
-    const courseData = {
-      title: title.value,
-      description: description.value,
-      category_id: categoryId.value
-    };
+    const courseData = new FormData();
+    courseData.append('title', title.value);
+    courseData.append('description', description.value);
+    courseData.append('category_id', categoryId.value);
+    if (imageFile.value) {
+        courseData.append('image', imageFile.value);
+    }
+    await courseApi.updateCourse(courseId, courseData, true);
     
-    await courseApi.updateCourse(courseId, courseData);
     router.push('/courses');
   } catch (error) {
     errorMessage.value = 'Failed to update course. Please try again.';
@@ -100,6 +108,18 @@ onMounted(async () => {
                         {{ category.name }}
                     </option>
                 </select>
+            </div>
+            <div class="mb-4">
+              <label for="image" class="block text-gray-700 text-sm font-bold mb-2">
+                Image
+              </label>
+              <input
+                id="image"
+                type="file"
+                @change="onFileChange"
+                accept="image/*"
+                class="block w-full text-sm text-gray-700 border rounded"
+              />
             </div>
             <div class="flex items-center justify-between">
                 <button :disabled="isLoading" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
