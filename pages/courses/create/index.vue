@@ -9,10 +9,15 @@ const categoryApi = useCategoryApi();
 
 const title = ref('');
 const description = ref('');
+const imageFile = ref(null);
 const categoryId = ref(null);
 const isLoading = ref(false);
 const errorMessage = ref('');
 const categories = ref([]);
+
+const onFileChange = (e) => {
+    imageFile.value = e.target.files[0];
+}
 
 onMounted(async () => {
     try {
@@ -28,13 +33,15 @@ const handleSubmit = async () => {
   errorMessage.value = '';
   
   try {
-    const courseData = {
-      title: title.value,
-      description: description.value,
-      category_id: categoryId.value
-    };
-    
-    await courseApi.createCourse(courseData);
+    const formData = new FormData();
+    formData.append('title', title.value);
+    formData.append('description', description.value);
+    formData.append('category_id', categoryId.value);
+    if (imageFile.value) {
+        formData.append('image', imageFile.value);
+    }
+
+    await courseApi.createCourse(formData, true);
     router.push('/courses');
   } catch (error) {
     errorMessage.value = 'Failed to create course. Please try again.';
@@ -82,6 +89,18 @@ const handleSubmit = async () => {
                         {{ category.name }}
                     </option>
                 </select>
+            </div>
+            <div class="mb-4">
+              <label for="image" class="block text-gray-700 text-sm font-bold mb-2">
+                Image
+              </label>
+              <input
+                id="image"
+                type="file"
+                @change="onFileChange"
+                accept="image/*"
+                class="block w-full text-sm text-gray-700 border rounded"
+              />
             </div>
             <div class="flex items-center justify-between">
                 <button :disabled="isLoading" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">

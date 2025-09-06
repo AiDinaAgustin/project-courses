@@ -46,12 +46,12 @@ export const useCourseApi = () => {
         }
     }
 
-    const createCourse = async (courseData) => {
+    const createCourse = async (courseData, isMultipart) => {
         try {
             const response = await fetch(`${apiUrl}/courses`, {
                 method: 'POST',
-                headers: getHeaders(),
-                body: JSON.stringify(courseData),
+                headers: isMultipart ? { 'Authorization': `Bearer ${tokenCookie.value}` } : getHeaders(),
+                body: courseData,
             });
 
             if (!response.ok) {

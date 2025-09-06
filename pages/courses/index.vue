@@ -75,6 +75,7 @@ onMounted(fetchCourses);
             <th class="py-2 px-4 border-b">No</th>
             <th class="py-2 px-4 border-b">Title</th>
             <th class="py-2 px-4 border-b">Description</th>
+            <th class="py-2 px-4 border-b">Image</th>
             <th class="py-2 px-4 border-b">Category</th>
             <th class="py-2 px-4 border-b">Actions</th>
           </tr>
@@ -84,6 +85,10 @@ onMounted(fetchCourses);
             <td class="py-2 px-4 border-b">{{ (page - 1) * (courses.length) + idx + 1 }}</td>
             <td class="py-2 px-4 border-b">{{ course.title }}</td>
             <td class="py-2 px-4 border-b">{{ course.description }}</td>
+            <td class="py-2 px-4 border-b">
+              <img v-if="course.image_url" :src="course.image_url" alt="Course Image" class="h-16 w-16 object-cover rounded"/>
+              <span v-else>No Image</span>
+            </td>
             <td class="py-2 px-4 border-b">{{ course.category.name || 'Uncategorized' }}</td>
             <td class="py-2 px-4 border-b">
               <NuxtLink :to="`/courses/${course.id}/edit`" class="text-blue-600 hover:underline mr-4">Edit</NuxtLink>
