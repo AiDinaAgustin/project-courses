@@ -47,8 +47,46 @@ const deleteCourse = async (id) => {
   }
 };
 
-const exportCourses = async () => {
+const showImportModal = ref(false);
+const importFile = ref(null);
+
+const openImportModal = () => {
+  showImportModal.value = true;
+  importFile.value = null;
+  errorMessage.value = '';
+};
+
+const closeImportModal = () => {
+  showImportModal.value = false;
+  importFile.value = null;
+  errorMessage.value = '';
+};
+
+const onImportFileChange = (e) => {
+  importFile.value = e.target.files[0];
+};
+
+const handleImport = async () => {
+  if (!importFile.value) {
+    errorMessage.value = 'Please select a file.';
+    return;
+  }
   isLoading.value = true;
+  errorMessage.value = '';
+  try {
+    await courseApi.importCourse(importFile.value);
+    await fetchCourses();
+    closeImportModal();
+  } catch (error) {
+    errorMessage.value = 'Failed to import courses. Please try again.';
+    console.error('Error importing courses:', error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const exportCourses = async () => {
+  isLoading.value = false;
   errorMessage.value = '';
 
   try {
@@ -79,7 +117,30 @@ onMounted(fetchCourses);
     <div class="container mx-auto px-4 py-8">
       <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">Courses</h1>
-
+                      <!-- Import Button -->
+              <button @click="openImportModal" class="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 mr-4">
+                Import Courses
+              </button>
+              
+              <!-- Import Modal -->
+              <div v-if="showImportModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                <div class="bg-white rounded shadow-lg p-6 w-full max-w-md">
+                  <h2 class="text-lg font-bold mb-4">Import Courses</h2>
+                  <input
+                    type="file"
+                    accept=".xlsx,.xls"
+                    @change="onImportFileChange"
+                    class="mb-4"
+                  />
+                  <div v-if="errorMessage" class="text-red-600 mb-2">{{ errorMessage }}</div>
+                  <div class="flex justify-end space-x-2">
+                    <button @click="closeImportModal" type="button" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
+                    <button @click="handleImport" :disabled="isLoading" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                      {{ isLoading ? 'Importing...' : 'Import' }}
+                    </button>
+                  </div>
+                </div>
+              </div>       
         <button @click="exportCourses" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mr-4">
           Export Courses
         </button>
