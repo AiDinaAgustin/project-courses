@@ -47,6 +47,29 @@ const deleteCourse = async (id) => {
   }
 };
 
+const exportCourses = async () => {
+  isLoading.value = true;
+  errorMessage.value = '';
+
+  try {
+    const blob = await courseApi.exportCourse();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'courses_export.xlsx');
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    errorMessage.value = 'Failed to export courses. Please try again.';
+    console.error('Error exporting courses:', error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+
 onMounted(fetchCourses);
 
 </script>
@@ -56,6 +79,10 @@ onMounted(fetchCourses);
     <div class="container mx-auto px-4 py-8">
       <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">Courses</h1>
+
+        <button @click="exportCourses" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mr-4">
+          Export Courses
+        </button>
         <NuxtLink to="/courses/create" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
           Add Course
         </NuxtLink>
